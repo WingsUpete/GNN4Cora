@@ -2,7 +2,7 @@
 
 ### Preprocess ###
 cd preprocess || exit
-# TODO
+python CoraPreprocessor.py -dr ../data/cora/
 cd ../
 
 
