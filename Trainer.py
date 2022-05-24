@@ -107,7 +107,6 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, bs=Config.BATCH_SIZE_DEFAULT, ep=Conf
         # TODO: train and get result
 
 
-
 def evaluate(model_name, bs=Config.BATCH_SIZE_DEFAULT, num_workers=Config.WORKERS_DEFAULT,
              use_gpu=True, gpu_id=Config.GPU_ID_DEFAULT,
              data_dir=Config.DATA_DIR_DEFAULT, logr=Logger(activate=False)):
