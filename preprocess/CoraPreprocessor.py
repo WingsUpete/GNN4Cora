@@ -35,7 +35,7 @@ class CoraPreProcessor:
         self.data_dir = data_dir
         if not self.check_data_integrity():
             self.prepare_data()
-        print('> [init] %s successfully initialized.' % self.__class__.__name__)
+        print('> [CoraPreprocessor:init] %s successfully initialized.' % self.__class__.__name__)
 
     def check_data_integrity(self):
         """ Checks data integrity, i.e., whether we have all the raw data needed. """
@@ -50,15 +50,15 @@ class CoraPreProcessor:
         tgz_path = os.path.join(self.data_dir, TGZ_FN)
 
         if os.path.isfile(tgz_path):
-            print('> [prepare_data] Data already downloaded as %s' % tgz_path)
+            print('> [CoraPreprocessor:prepare_data] Data already downloaded as %s' % tgz_path)
         else:
-            print('> [prepare_data] Downloading data from %s to %s' % (DATA_URL, tgz_path))
+            print('> [CoraPreprocessor:prepare_data] Downloading data from %s to %s' % (DATA_URL, tgz_path))
             response = requests.get(DATA_URL, stream=True)
             if response.status_code == 200:
                 with open(tgz_path, 'wb') as f:
                     f.write(response.raw.read())
 
-        print('> [prepare_data] Extracting files...')
+        print('> [CoraPreprocessor:prepare_data] Extracting files...')
         with tarfile.open(tgz_path) as f:
             f.extractall(self.data_dir)
         temp_dir = os.path.join(self.data_dir, 'cora/')
@@ -66,7 +66,7 @@ class CoraPreProcessor:
             shutil.move(os.path.join(temp_dir, file), self.data_dir)
         os.rmdir(temp_dir)
 
-        print('> [prepare_data] Data is now ready on %s' % self.data_dir)
+        print('> [CoraPreprocessor:prepare_data] Data is now ready on %s' % self.data_dir)
 
     def construct_graph(self, pub_dict: dict, save=True):
         """
@@ -75,7 +75,7 @@ class CoraPreProcessor:
         :param save: specifies whether the constructed graph will be saved to local disk as "cora.dgl"
         :return: a DGLGraph constructed from pub_dict
         """
-        print('> [construct_graph] Constructing DGLGraph...')
+        print('> [CoraPreprocessor:construct_graph] Constructing DGLGraph...')
         graph = dgl.graph((pub_dict['src_list'], pub_dict['dst_list']), num_nodes=len(pub_dict['nodes']))
 
         features = []
@@ -89,7 +89,7 @@ class CoraPreProcessor:
         if save:
             graph_path = os.path.join(self.data_dir, 'cora.dgl')
             dgl.save_graphs(graph_path, graph)
-            print('> [construct_graph] DGLGraph saved to %s' % graph_path)
+            print('> [CoraPreprocessor:construct_graph] DGLGraph saved to %s' % graph_path)
 
         return graph
 
@@ -103,7 +103,8 @@ class CoraPreProcessor:
         :return: a dictionary including the needed information (nodes, edges, node features, node labels)
         """
         if (not relationship) or (relationship not in ['citing', 'cited', 'both']):
-            print('> [construct_pub_dict] Unrecognized graph relationship, use "%s" instead' % GRAPH_RELATIONSHIP_DEFAULT)
+            print('> [CoraPreprocessor:construct_pub_dict] Unrecognized graph relationship "%s", use "%s" instead' %
+                  (relationship, GRAPH_RELATIONSHIP_DEFAULT))
             relationship = GRAPH_RELATIONSHIP_DEFAULT
 
         # 1. Process contents: publication id, word feature vector, label
@@ -112,7 +113,7 @@ class CoraPreProcessor:
         nodes = []
         pub_id2node_id = {}
         content_path = os.path.join(self.data_dir, CONTENT_DATA_FN)
-        print('> [construct_pub_dict] Processing %s' % content_path)
+        print('> [CoraPreprocessor:construct_pub_dict] Processing %s' % content_path)
         with open(content_path) as f:
             while True:
                 line = f.readline().strip()
@@ -146,7 +147,7 @@ class CoraPreProcessor:
         # process cites: citing relationship among publications
         src_list, dst_list = [], []
         cites_path = os.path.join(self.data_dir, CITES_DATA_FN)
-        print('> [construct_pub_dict] Processing %s' % cites_path)
+        print('> [CoraPreprocessor:construct_pub_dict] Processing %s' % cites_path)
         with open(cites_path) as f:
             while True:
                 line = f.readline().strip()
@@ -172,7 +173,7 @@ class CoraPreProcessor:
                     sys.stderr.write('Unrecognized relationship appeared!\n')
                     exit(-1)
 
-        print('> [construct_pub_dict] Collecting components to construct the publication dictionary...')
+        print('> [CoraPreprocessor:construct_pub_dict] Collecting components to construct the publication dictionary...')
         pub_dict = {
             'nodes': nodes,
             'src_list': src_list,
@@ -194,7 +195,7 @@ class CoraPreProcessor:
             meta_path = os.path.join(self.data_dir, 'meta.json')
             with open(meta_path, 'w') as f:
                 json.dump(meta, f)
-            print('> [construct_pub_dict] Publication dictionary saved to %s' % meta_path)
+            print('> [CoraPreprocessor:construct_pub_dict] Publication dictionary saved to %s' % meta_path)
 
         return pub_dict, meta
 
