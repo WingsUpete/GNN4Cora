@@ -122,12 +122,12 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
             with profiler.profile(profile_memory=True, use_cuda=True) as prof:
                 with profiler.record_function('model_inference'):
                     logits = net(cgraph, features)
-                    pred = logits.argmax(1)
+                    pred = logits.argmax(dim=1)
             logr.log(prof.key_averages().table(sort_by="cuda_time_total"))
             exit(100)
 
         logits = net(cgraph, features)
-        pred = logits.argmax(1)
+        pred = logits.argmax(dim=1)
 
         loss = criterion(logits[train_mask], labels[train_mask])
         loss.backward()
@@ -206,7 +206,7 @@ def evaluate(model_name,
     test_mask = cgraph.ndata['test_mask']
     net.eval()
     logits = net(cgraph, features)
-    pred = logits.argmax(1)
+    pred = logits.argmax(dim=1)
     valid_acc = (pred[valid_mask] == labels[valid_mask]).float().mean()
     test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
     logr.log('> Evaluation Results: valid_acc = %.4f%%, test_acc = %.4f%%\n' % (valid_acc * 100, test_acc * 100))

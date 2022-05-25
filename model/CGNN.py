@@ -62,7 +62,7 @@ class CGNN(nn.Module):
             g.ndata['proj_z'] = embed_feat
             # Convolution to get output as feature for the next block
             cur_feat = self.layers[i](g)
-            cur_feat = F.relu(cur_feat)
+            cur_feat = F.leaky_relu(cur_feat)
 
         h = torch.cat([proj_feat, cur_feat], dim=-1)
         del embed_feat

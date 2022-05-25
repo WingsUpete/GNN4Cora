@@ -12,6 +12,9 @@ datapath=data/cora
 
 
 
+### MLP ###
+python Trainer.py -dr $datapath -gid 0 -m trainNeval -net MLP -tag MLP
+
 ### GCN ###
 python Trainer.py -dr $datapath -gid 0 -m trainNeval -net GCN -tag GCN
 
