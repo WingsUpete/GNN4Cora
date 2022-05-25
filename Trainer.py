@@ -10,7 +10,6 @@ import torch.autograd.profiler as profiler
 
 stderr = sys.stderr
 sys.stderr = open(os.devnull, 'w')
-from dgl.dataloading import GraphDataLoader
 sys.stderr.close()
 sys.stderr = stderr
 
@@ -29,7 +28,7 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
           data_dir=Config.DATA_DIR_DEFAULT, logr=Logger(activate=False),
           model=Config.NETWORK_DEFAULT,
           model_save_dir=Config.MODEL_SAVE_DIR_DEFAULT,
-          hidden_dim=Config.HIDDEN_DIM_DEFAULT, feat_dim=Config.FEAT_DIM_DEFAULT,
+          feat_dim=Config.FEAT_DIM_DEFAULT, hidden_dim=Config.HIDDEN_DIM_DEFAULT, out_dim=Config.NUM_CLASSES,
           loss_function=Config.LOSS_FUNC_DEFAULT):
     """
         Train and save the model
@@ -45,25 +44,27 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     logr.log('> Loading DataSet from {}\n'.format(data_dir))
     dataset = CDataSet(data_dir)
     cgraph = dataset[0]
-    # logr.log('> Training batches: {}, Validation batches: {}\n'.format(len(trainloader), len(validloader)))   # TODO: data info
+    logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
+    logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
+    logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
 
     # Initialize the Model
     logr.log('> Initializing the Training Model: {}\n'.format(model))
     if model == 'GCN':
-        net = GCN(in_dim=feat_dim, out_dim=hidden_dim,
-                  use_pre_w=Config.USE_PRE_W_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT)
+        net = GCN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
+                  blk_size=Config.BLK_SIZE_DEFAULT)
     elif model == 'GAT':
-        net = GAT(in_dim=feat_dim, out_dim=hidden_dim,
-                  use_pre_w=Config.USE_PRE_W_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
+        net = GAT(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
+                  blk_size=Config.BLK_SIZE_DEFAULT,
                   num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
     elif model == 'GaAN':
-        net = GaAN(in_dim=feat_dim, out_dim=hidden_dim,
-                   use_pre_w=Config.USE_PRE_W_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
+        net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
+                   blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
     else:
         # Default: GaAN
-        net = GaAN(in_dim=feat_dim, out_dim=hidden_dim,
-                   use_pre_w=Config.USE_PRE_W_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
+        net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
+                   blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
 
     logr.log('> Model Structure:\n{}\n'.format(net))
@@ -118,7 +119,7 @@ def evaluate(model_name,
 if __name__ == '__main__':
     """ 
         Usage Example:
-        python Trainer.py -dr data/cora/ -c 4 -m trainNeval -net GaAN
+        python Trainer.py -dr data/cora/ -c 4 -m trainNeval -net GaAN -tag GaAN
     """
     parser = argparse.ArgumentParser()
     # training parameters
@@ -132,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('-net', '--network', type=str, default=Config.NETWORK_DEFAULT, help='Specify which model/network to use, default = {}'.format(Config.NETWORK_DEFAULT))
     parser.add_argument('-fd', '--feature_dim', type=int, default=Config.FEAT_DIM_DEFAULT, help='Specify the feature dimension, default = {}'.format(Config.FEAT_DIM_DEFAULT))
     parser.add_argument('-hd', '--hidden_dim', type=int, default=Config.HIDDEN_DIM_DEFAULT, help='Specify the hidden dimension, default = {}'.format(Config.HIDDEN_DIM_DEFAULT))
+    parser.add_argument('-od', '--out_dim', type=int, default=Config.NUM_CLASSES, help='Specify the output dimension, default = {}'.format(Config.NUM_CLASSES))
     # data handling
     parser.add_argument('-dr', '--data_dir', type=str, default=Config.DATA_DIR_DEFAULT, help='Root directory of the input data, default = {}'.format(Config.DATA_DIR_DEFAULT))
     parser.add_argument('-gpu', '--gpu', type=int, default=Config.USE_GPU_DEFAULT, help='Specify whether to use GPU, default = {}'.format(Config.USE_GPU_DEFAULT))
@@ -163,7 +165,7 @@ if __name__ == '__main__':
               data_dir=FLAGS.data_dir, logr=logger,
               model=FLAGS.network,
               model_save_dir=FLAGS.model_save_dir,
-              hidden_dim=FLAGS.hidden_dim, feat_dim=FLAGS.feature_dim,
+              feat_dim=FLAGS.feature_dim, hidden_dim=FLAGS.hidden_dim, out_dim=FLAGS.out_dim,
               loss_function=FLAGS.loss_function)
         logger.close()
     elif working_mode == 'eval':
@@ -186,7 +188,7 @@ if __name__ == '__main__':
               data_dir=FLAGS.data_dir, logr=logger,
               model=FLAGS.network,
               model_save_dir=FLAGS.model_save_dir,
-              hidden_dim=FLAGS.hidden_dim, feat_dim=FLAGS.feature_dim,
+              feat_dim=FLAGS.feature_dim, hidden_dim=FLAGS.hidden_dim, out_dim=FLAGS.out_dim,
               loss_function=FLAGS.loss_function)
 
         saved_model_path = os.path.join(Config.MODEL_SAVE_DIR_DEFAULT, '%s.pth' % logger.time_tag)

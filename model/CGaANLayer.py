@@ -5,15 +5,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import Config
 
-# TODO: no batch here, single graph is input
-class PwGaANLayer(nn.Module):
-    def __init__(self, in_dim, out_dim, use_pre_w=False,
-                 att=True, num_heads=1, gate=True):
-        super(PwGaANLayer, self).__init__()
+
+class CGaANLayer(nn.Module):
+    def __init__(self, in_dim, out_dim, att=True, gate=True):
+        super(CGaANLayer, self).__init__()
         self.in_dim = in_dim
         self.out_dim = out_dim
-        self.use_pre_w = use_pre_w
 
         self.att = att
         if self.att:
@@ -24,8 +23,6 @@ class PwGaANLayer(nn.Module):
             self.att_out_fc_l = nn.Linear(self.out_dim, 1, bias=False)
             self.att_out_fc_r = nn.Linear(self.out_dim, 1, bias=False)
 
-        self.num_heads = num_heads
-
         # Head gate layer
         self.gate = gate
         if self.gate:
@@ -33,7 +30,7 @@ class PwGaANLayer(nn.Module):
             self.gate_fc_l = nn.Linear(self.in_dim, 1, bias=False)
             self.gate_fc_m = nn.Linear(self.out_dim, 1, bias=False)
             self.gate_fc_r = nn.Linear(self.in_dim, 1, bias=False)
-            self.Wg = nn.Linear(self.in_dim, self.out_dim, bias=False)
+            self.Wgm = nn.Linear(self.in_dim, self.out_dim, bias=False)
 
         self.reset_parameters()
 
@@ -46,13 +43,13 @@ class PwGaANLayer(nn.Module):
             nn.init.xavier_normal_(self.att_out_fc_r.weight, gain=gain)
         if self.gate:
             gain = nn.init.calculate_gain('sigmoid')
-            nn.init.xavier_normal_(self.Wg.weight, gain=gain)
             nn.init.xavier_normal_(self.gate_fc_l.weight, gain=gain)
             nn.init.xavier_normal_(self.gate_fc_m.weight, gain=gain)
             nn.init.xavier_normal_(self.gate_fc_r.weight, gain=gain)
+            nn.init.xavier_normal_(self.Wgm.weight, gain=gain)
 
     def edge_attention(self, edges):
-        a = self.att_out_fc_l((edges.data['pre_w'] if self.use_pre_w else 1) * edges.src['z']) + self.att_out_fc_r(edges.dst['z'])
+        a = self.att_out_fc_l(edges.src['z']) + self.att_out_fc_r(edges.dst['z'])
         return {'e': F.leaky_relu(a)}
 
     def message_func(self, edges):
@@ -60,31 +57,28 @@ class PwGaANLayer(nn.Module):
         # The messages will be sent to the mailbox
         # mailbox['proj_z']: z->x, so we need z's projected features
         # mailbox['e']: z->x has a e for attention calculation
-        if self.gate:
-            pwFeat = (edges.data['pre_w'] if self.use_pre_w else 1) * edges.src['v']
-            return {'proj_z': edges.src['proj_z'], 'e': edges.data['e'], 'pre_v_g': pwFeat}
+        if self.gate:       # GaAN
+            return {'proj_z': edges.src['proj_z'], 'e': edges.data['e'], 'v_g': edges.src['v']}
         else:
-            if self.att:
+            if self.att:    # GAT
                 return {'proj_z': edges.src['proj_z'], 'e': edges.data['e']}
-            else:
-                return {'proj_z': edges.src['proj_z'], 'pre_w': edges.data['pre_w']} if self.use_pre_w else \
-                    {'proj_z': edges.src['proj_z']}
+            else:           # GCN
+                return {'proj_z': edges.src['proj_z'], 'dg_f_comb': edges.src['dg_f'] * edges.dst['dg_f']}
 
     def reduce_func(self, nodes):
         """ Specify how messages are processed and propagated to nodes """
-        if self.att:
+        if self.att:    # GaAN & GAT
             # Aggregate features to nodes
             alpha = F.softmax(nodes.mailbox['e'], dim=1)
             alpha = F.dropout(alpha, 0.1)
             h = torch.sum(alpha * nodes.mailbox['proj_z'], dim=1)
-        else:
-            h = torch.sum(nodes.mailbox['pre_w'] * nodes.mailbox['proj_z'], dim=1) if self.use_pre_w else \
-                torch.sum(nodes.mailbox['proj_z'], dim=1)
+        else:           # GCN
+            h = torch.sum(nodes.mailbox['dg_f_comb'] * nodes.mailbox['proj_z'], dim=1)
 
         # head gates
-        if self.gate:
-            pwFeat = nodes.mailbox['pre_v_g']
-            gateProj = self.Wg(pwFeat)
+        if self.gate:   # GaAN
+            pwFeat = nodes.mailbox['v_g']
+            gateProj = self.Wgm(pwFeat)
             maxFeat = torch.max(gateProj, dim=1)[0]
             meanFeat = torch.mean(pwFeat, dim=1)
             gFCVal = self.gate_fc_l(nodes.data['v']) + self.gate_fc_m(maxFeat) + self.gate_fc_r(meanFeat)
@@ -95,7 +89,7 @@ class PwGaANLayer(nn.Module):
 
     def forward(self, g: dgl.DGLGraph):
         with g.local_scope():
-            if self.att:
+            if self.att:    # GAT & GaAN
                 feat = g.ndata['v']
 
                 # Wa: shared attention to features v (or h for multiple GAT layers)
@@ -104,38 +98,37 @@ class PwGaANLayer(nn.Module):
 
                 # AttentionNet
                 g.apply_edges(self.edge_attention)
+            else:           # GCN
+                g.ndata['dg_f'] = torch.pow(g.in_degrees().float().clamp(min=1), -0.5).reshape(-1, 1)
 
             # Message Passing
             g.update_all(self.message_func, self.reduce_func)
-            res = (g.ndata['proj_z'] + g.ndata['h']).reshape(self.num_heads, int(g.batch_size / self.num_heads), -1, self.out_dim)
+            res = g.ndata['proj_z'] + g.ndata['h']
             return res
 
 
-class MultiHeadPwGaANLayer(nn.Module):
-    def __init__(self, in_dim, out_dim, use_pre_w=False,
-                 att=True, num_heads=1, merge='cat', gate=True):
-        super(MultiHeadPwGaANLayer, self).__init__()
+class MultiHeadCGaANLayer(nn.Module):
+    def __init__(self, in_dim, out_dim,
+                 att=True, num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT, gate=True):
+        super(MultiHeadCGaANLayer, self).__init__()
         self.att = att
         self.gate = gate
         if (not self.att) and self.gate:
             sys.stderr.write('[MultiHeadPwGaANLayer] Use Attention = %s but Use Gate = %s!\n' % (str(self.att), str(self.gate)))
             exit(-985)
 
-        self.use_pre_w = use_pre_w
-
         self.num_heads = num_heads
-        self.pwGaAN = PwGaANLayer(in_dim, out_dim, use_pre_w=self.use_pre_w,
-                                  att=self.att, num_heads=self.num_heads, gate=self.gate)
+        self.cGaANs = nn.ModuleList([
+            CGaANLayer(in_dim, out_dim, att=self.att, gate=self.gate) for _ in range(self.num_heads)
+        ])
 
         self.merge = merge
 
     def forward(self, g: dgl.DGLGraph):
-        batch_g = dgl.batch([g for i in range(self.num_heads)])
-        head_outs = self.pwGaAN(batch_g)
-        del batch_g
+        head_outs = torch.stack([self.cGaANs[i](g) for i in range(len(self.cGaANs))])
         if self.merge == 'cat':
-            return head_outs.permute(1, 2, 0, 3).reshape(head_outs.shape[-3], head_outs.shape[-2], -1)
+            return head_outs.permute(1, 0, 2).reshape(head_outs.shape[-2], -1)
         elif self.merge == 'mean':
             return torch.mean(head_outs, dim=0)
         else:
-            return head_outs.permute(1, 2, 0, 3).reshape(head_outs.shape[-3], head_outs.shape[-2], -1)  # Default: cat
+            return head_outs.permute(1, 0, 2).reshape(head_outs.shape[-2], -1)  # Default: cat
