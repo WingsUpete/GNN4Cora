@@ -133,3 +133,6 @@ dmypy.json
 
 # DATA
 data/
+
+# Saved Model
+model_save/

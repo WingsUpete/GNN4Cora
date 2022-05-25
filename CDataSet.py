@@ -54,9 +54,9 @@ class CDataSet(DGLDataset):
         for i in range(self.num_test):
             test_mask[temp_list[self.num_train + self.num_valid + i]] = True
 
-        self.graph.ndata['train_mask'] = torch.Tensor(train_mask)
-        self.graph.ndata['valid_mask'] = torch.Tensor(valid_mask)
-        self.graph.ndata['test_mask'] = torch.Tensor(test_mask)
+        self.graph.ndata['train_mask'] = torch.Tensor(train_mask).bool()
+        self.graph.ndata['valid_mask'] = torch.Tensor(valid_mask).bool()
+        self.graph.ndata['test_mask'] = torch.Tensor(test_mask).bool()
 
     def process(self):
         """

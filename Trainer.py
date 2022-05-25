@@ -15,7 +15,7 @@ sys.stderr = stderr
 
 from CDataSet import CDataSet
 from model import GCN, GAT, GaAN
-from utils import Logger
+from utils import Logger, plot_grad_flow
 
 import Config
 if Config.CHECK_GRADS:
@@ -44,6 +44,9 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     logr.log('> Loading DataSet from {}\n'.format(data_dir))
     dataset = CDataSet(data_dir)
     cgraph = dataset[0]
+    if device:
+        cgraph = cgraph.to(device)
+        logr.log('> Data sent to {}\n'.format(device))
     logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
     logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
     logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
@@ -66,7 +69,6 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
         net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
                    blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
-
     logr.log('> Model Structure:\n{}\n'.format(net))
     if device:
         net.to(device)
@@ -98,10 +100,70 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     logr.log('\nStart Training!\n')
     logr.log('------------------------------------------------------------------------\n')
 
+    max_eval_acc = 0.0
+    features = cgraph.ndata['feat']
+    labels = cgraph.ndata['label']
+    train_mask = cgraph.ndata['train_mask']
+    valid_mask = cgraph.ndata['valid_mask']
+    test_mask = cgraph.ndata['test_mask']
     for epoch_i in range(ep):
         # Train one round
         net.train()
-        # TODO: train and get result
+        time_start_train = time.time()
+        if device and device.type == 'cuda':
+            torch.cuda.empty_cache()
+
+        # Avoid exploding gradients
+        torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=Config.MAX_NORM_DEFAULT)
+
+        optimizer.zero_grad()
+
+        if Config.PROFILE:
+            with profiler.profile(profile_memory=True, use_cuda=True) as prof:
+                with profiler.record_function('model_inference'):
+                    logits = net(cgraph, features)
+                    pred = logits.argmax(1)
+            logr.log(prof.key_averages().table(sort_by="cuda_time_total"))
+            exit(100)
+
+        logits = net(cgraph, features)
+        pred = logits.argmax(1)
+
+        loss = criterion(logits[train_mask], labels[train_mask])
+        loss.backward()
+
+        if Config.CHECK_GRADS:
+            plot_grad_flow(net.named_parameters())
+
+        optimizer.step()
+
+        time_end_train = time.time()
+        total_train_time = (time_end_train - time_start_train)
+        with torch.no_grad():
+            train_acc = (pred[train_mask] == labels[train_mask]).float().mean()
+            logr.log('Training Round %d: loss = %.6f, time_cost = %.4f sec, acc = %.4f%%\n' %
+                     (epoch_i + 1, loss.item(), total_train_time, train_acc * 100))
+
+        # eval_freq: Evaluate on validation set
+        if (epoch_i + 1) % eval_freq == 0:
+            net.eval()
+            with torch.no_grad():
+                valid_acc = (pred[valid_mask] == labels[valid_mask]).float().mean()
+                test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
+                logr.log('!!! Evaluation: valid_acc = %.4f%%, test_acc = %.4f%%\n' % (valid_acc * 100, test_acc * 100))
+                # Select current best model
+                if epoch_i >= 10 and valid_acc > max_eval_acc:
+                    max_eval_acc = valid_acc
+                    model_name = os.path.join(model_save_dir, '{}.pth'.format(logr.time_tag))
+                    torch.save(net, model_name)
+                    logr.log('Model: {} has been saved since it achieves higher validation accuracy.\n'.format(model_name))
+
+        if Config.TRAIN_JUST_ONE_ROUND:
+            if epoch_i == 0:    # DEBUG
+                break
+
+    # End Training
+    logr.log('> Training finished.\n')
 
 
 def evaluate(model_name,
@@ -109,17 +171,54 @@ def evaluate(model_name,
              data_dir=Config.DATA_DIR_DEFAULT, logr=Logger(activate=False)):
     """
         Evaluate using saved best model (Note that this is a Test API)
-        1. Re-evaluate on the validation set
-        2. Re-evaluate on the test set
-        The evaluation metrics include xxx
+        1. Re-evaluate on the training set
+        2. Re-evaluate on the validation set
+        3. Evaluate on the test set
+        The evaluation metrics include "accuracy"
     """
-    pass
+    # Create Device
+    device = torch.device('cuda:%d' % gpu_id if (use_gpu and torch.cuda.is_available()) else 'cpu')
+    logr.log('> device: {}\n'.format(device))
+
+    # Load DataSet
+    logr.log('> Loading DataSet from {}\n'.format(data_dir))
+    dataset = CDataSet(data_dir)
+    cgraph = dataset[0]
+    if device:
+        cgraph = cgraph.to(device)
+        logr.log('> Data sent to {}\n'.format(device))
+    logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
+    logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
+    logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
+
+    # Load Model
+    logr.log('> Loading {}\n'.format(model_name))
+    net = torch.load(model_name, map_location=device)
+    logr.log('> Model Structure:\n{}\n'.format(net))
+    if device:
+        net.to(device)
+        logr.log('> Model sent to {}\n'.format(device))
+
+    # Evaluate now
+    features = cgraph.ndata['feat']
+    labels = cgraph.ndata['label']
+    valid_mask = cgraph.ndata['valid_mask']
+    test_mask = cgraph.ndata['test_mask']
+    net.eval()
+    logits = net(cgraph, features)
+    pred = logits.argmax(1)
+    valid_acc = (pred[valid_mask] == labels[valid_mask]).float().mean()
+    test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
+    logr.log('> Evaluation Results: valid_acc = %.4f%%, test_acc = %.4f%%\n' % (valid_acc * 100, test_acc * 100))
+
+    # End Evaluation
+    logr.log('> Evaluation finished.\n')
 
 
 if __name__ == '__main__':
     """ 
         Usage Example:
-        python Trainer.py -dr data/cora/ -c 4 -m trainNeval -net GaAN -tag GaAN
+        python Trainer.py -dr data/cora/ -m trainNeval -net GaAN -tag GaAN
     """
     parser = argparse.ArgumentParser()
     # training parameters

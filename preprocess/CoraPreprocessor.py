@@ -84,7 +84,7 @@ class CoraPreProcessor:
             features.append(node['feat'])
             labels.append(node['label'])
         graph.ndata['feat'] = torch.stack(features)
-        graph.ndata['label'] = torch.Tensor(labels)
+        graph.ndata['label'] = torch.Tensor(labels).long()
 
         if save:
             graph_path = os.path.join(self.data_dir, 'cora.dgl')
