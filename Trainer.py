@@ -14,7 +14,7 @@ sys.stderr.close()
 sys.stderr = stderr
 
 from CDataSet import CDataSet
-from model import GCN, GAT, GaAN
+from model import GCN, GAT, GaAN, CMLP
 from utils import Logger, plot_grad_flow
 
 import Config
@@ -69,6 +69,8 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
         net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
                    blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
+    elif model == 'MLP':
+        net = CMLP(in_dim=feat_dim, hidden_dim_ref=hidden_dim, out_dim=out_dim)
     else:
         # Default: GaAN
         net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
