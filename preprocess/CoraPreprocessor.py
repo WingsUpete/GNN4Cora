@@ -189,7 +189,8 @@ class CoraPreProcessor:
             'num_feats': pub_dict['nodes'][-1]['feat'].shape[-1],
             'num_classes': len(pub_dict['extra']['label_map']),
             'label_map': pub_dict['extra']['label_map'],
-            'id_map_pub2node': pub_id2node_id
+            'id_map_pub2node': pub_id2node_id,
+            'relationship': relationship
         }
         if save_meta:
             meta_path = os.path.join(self.data_dir, 'meta.json')
