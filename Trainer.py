@@ -46,10 +46,15 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     cgraph = dataset[0]
     if device:
         cgraph = cgraph.to(device)
+        if dataset.need_loss_weights:
+            dataset.loss_weights = dataset.loss_weights.to(device)
         logr.log('> Data sent to {}\n'.format(device))
     logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
     logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
     logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
+    logr.log('> train_set_imbalance: %s\n' % dataset.train_imbalance_record)
+    if dataset.need_loss_weights:
+        logr.log('> loss_weights: %s\n' % dataset.loss_weights)
 
     # Initialize the Model
     logr.log('> Initializing the Training Model: {}\n'.format(model))
@@ -83,10 +88,15 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
 
     # Loss Function
     logr.log('> Using {} as the Loss Function.\n'.format(loss_function))
-    if loss_function == 'CrossEntropyLoss':
-        criterion = nn.CrossEntropyLoss()
+    if dataset.need_loss_weights:
+        logr.log('> Using loss weights for cost rescaling.\n')
+        loss_weights = dataset.loss_weights
     else:
-        criterion = nn.CrossEntropyLoss()   # Default: CrossEntropyLoss
+        loss_weights = None
+    if loss_function == 'CrossEntropyLoss':
+        criterion = nn.CrossEntropyLoss(weight=loss_weights)
+    else:
+        criterion = nn.CrossEntropyLoss(weight=loss_weights)   # Default: CrossEntropyLoss
 
     # Model Saving Directory
     if not os.path.isdir(model_save_dir):
@@ -190,6 +200,7 @@ def evaluate(model_name,
     logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
     logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
     logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
+    logr.log('> train_set_imbalance: %s\n' % dataset.train_imbalance_record)
 
     # Load Model
     logr.log('> Loading {}\n'.format(model_name))

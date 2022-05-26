@@ -36,12 +36,17 @@ class CDataSet(DGLDataset):
         self.num_valid = int(self.meta['num_nodes'] * train_valid_test_ratio[1])
         self.num_test = self.meta['num_nodes'] - self.num_train - self.num_valid
 
-        self.train_valid_test_split()
+        self.train_imbalance_record = self.train_valid_test_split()
+        # Calculate weights for loss rescaling
+        self.need_loss_weights, self.loss_weights = self.cal_loss_weights()
 
     def train_valid_test_split(self):
         train_mask = [False for _ in range(self.meta['num_nodes'])]
         valid_mask = [False for _ in range(self.meta['num_nodes'])]
         test_mask = [False for _ in range(self.meta['num_nodes'])]
+        train_imbalance_record = {}
+        for i in range(self.meta['num_classes']):
+            train_imbalance_record[i] = 0
 
         random.seed(Config.RAND_SEED)
         temp_list = [i for i in range(self.meta['num_nodes'])]
@@ -49,6 +54,9 @@ class CDataSet(DGLDataset):
 
         for i in range(self.num_train):
             train_mask[temp_list[i]] = True
+            # Summarize imbalance of the training set
+            cur_label = self.graph.ndata['label'][temp_list[i]].item()
+            train_imbalance_record[cur_label] += 1
         for i in range(self.num_valid):
             valid_mask[temp_list[self.num_train + i]] = True
         for i in range(self.num_test):
@@ -57,6 +65,20 @@ class CDataSet(DGLDataset):
         self.graph.ndata['train_mask'] = torch.Tensor(train_mask).bool()
         self.graph.ndata['valid_mask'] = torch.Tensor(valid_mask).bool()
         self.graph.ndata['test_mask'] = torch.Tensor(test_mask).bool()
+
+        return train_imbalance_record
+
+    def cal_loss_weights(self):
+        """
+        https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html
+        w = num_train / (num_classes * train_imbalance_records)
+        :return:
+        """
+        loss_weights = torch.Tensor([self.train_imbalance_record[i] for i in range(self.meta['num_classes'])]).float()
+        if torch.max(loss_weights) / torch.min(loss_weights) < 10.0:    # Not so imbalanced
+            return False, None
+        loss_weights = self.num_train / (self.meta['num_classes'] * loss_weights)
+        return True, loss_weights
 
     def process(self):
         """
@@ -81,6 +103,9 @@ class CDataSet(DGLDataset):
                    (self.meta['num_nodes'], self.meta['num_edges'], self.meta['num_feats'], self.meta['num_classes'])
         info_msg += 'num_training_samples: %d\nnum_validation_samples: %d\nnum_test_samples: %d\n' % \
                     (self.num_train, self.num_valid, self.num_test)
+        info_msg += 'train_set_imbalance: %s\n' % self.train_imbalance_record
+        if self.need_loss_weights:
+            info_msg += 'loss_weights: %s\n' % self.loss_weights
         return info_msg
 
 
