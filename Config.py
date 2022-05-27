@@ -38,6 +38,10 @@ MODE_DEFAULT = 'trainNeval'
 BLK_SIZE_DEFAULT = 2
 MERGE_HEAD_MODE_DEFAULT = 'cat'
 
+VIEWS = ['citing', 'cited', 'both', 'double']
+VIEW_DEFAULT = 'both'   # citing, cited, both, double
+NUM_VIEW_DEFAULT = 2 if VIEW_DEFAULT == 'double' else 1
+
 # Customize: DIY
 # OUR_MODEL = 'OUR_MODEL'
 
