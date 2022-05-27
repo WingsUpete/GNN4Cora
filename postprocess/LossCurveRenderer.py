@@ -68,7 +68,7 @@ def trainLog2LossCurve(logfn=LOG_FN_DEFAULT, outdir=OUT_DIR_DEFAULT):
 if __name__ == '__main__':
     """ 
         Usage Example:
-        python LossCurveRenderer.py -i ../log/GaAN_trainNeval_20220526_13_32_41.log -o ./
+        python LossCurveRenderer.py -i ../records/logs/GaAN_trainNeval_20220527_21_36_39.log -o ./
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--in_log', type=str, default=LOG_FN_DEFAULT, help='The path of the input log file, default = {}'.format(LOG_FN_DEFAULT))
