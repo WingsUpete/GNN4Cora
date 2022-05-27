@@ -1,5 +1,7 @@
 # GNN4Cora
-A hands-on course mini-project of CSE5002 Intelligent Data Analysis, SUSTech 2022. The project aims to have students evaluate some classification models using the Cora dataset. This repository mainly focuses on GNN - Graph Neural Network models.
+A hands-on course mini-project of CSE5002 Intelligent Data Analysis, SUSTech 2022. The project aims to have students evaluate some classification models using the Cora dataset. This repository mainly focuses on GNN - Graph Neural Network models. Here, we mainly focus on using GNNs (Graph Neural Networks) and compare different ideas of designing the network structure. We implement three GNNs, namely [GCN](https://arxiv.org/pdf/1609.02907.pdf), [GAT](https://arxiv.org/pdf/1710.10903.pdf) and [GaAN](https://arxiv.org/pdf/1803.07294.pdf).
+
+The model implementation uses [PyTorch](https://pytorch.org/) and [Deep Graph Library](https://www.dgl.ai/).
 
 **For detailed explanations about how to set up the environment and run the code, please check [`GNN4Cora.ipynb`](GNN4Cora.ipynb).**
 
