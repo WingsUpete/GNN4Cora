@@ -236,6 +236,7 @@ if __name__ == '__main__':
     """ 
         Usage Example:
         python Trainer.py -dr data/cora/ -m trainNeval -net GaAN -tag GaAN
+        python Trainer.py -dr data/cora/ -m eval -e records/models/20220527_21_36_39.pth -tag GaAN
     """
     parser = argparse.ArgumentParser()
     # training parameters
