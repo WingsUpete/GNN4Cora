@@ -20,10 +20,25 @@ CITES_DATA_FN = 'cora.cites'
 CONTENT_DATA_FN = 'cora.content'
 
 DATA_DIR_DEFAULT = '../data/cora/'
-GRAPH_RELATIONSHIP_DEFAULT = 'both'  # ['citing', 'cited', 'both]
 
 
-def formEdge(src_list: list, dst_list: list, src_id: int, dst_id: int):
+def get_num_edges(edges):
+    cnt = 0
+    for edge in edges:
+        cnt += len(edge)
+    return cnt
+
+
+def tran_src_dst_list(edges):
+    src_list, dst_list = [], []
+    for i in range(len(edges)):
+        cur_src_id = i
+        for cur_dst_id in edges[i]:
+            src_list, dst_list = form_edge(src_list, dst_list, src_id=cur_src_id, dst_id=cur_dst_id)
+    return src_list, dst_list
+
+
+def form_edge(src_list: list, dst_list: list, src_id: int, dst_id: int):
     """ Wraps the process to form an edge using the source and destination node lists. """
     src_list.append(src_id)
     dst_list.append(dst_id)
@@ -76,37 +91,36 @@ class CoraPreProcessor:
         :return: a DGLGraph constructed from pub_dict
         """
         print('> [CoraPreprocessor:construct_graph] Constructing DGLGraph...')
-        graph = dgl.graph((pub_dict['src_list'], pub_dict['dst_list']), num_nodes=len(pub_dict['nodes']))
+        graphs = [dgl.to_simple(dgl.graph(tran_src_dst_list(pub_dict['edges'][i]), num_nodes=len(pub_dict['nodes'])))
+                  for i in range(len(pub_dict['edges']))]
 
         features = []
         labels = []
         for node in pub_dict['nodes']:
             features.append(node['feat'])
             labels.append(node['label'])
-        graph.ndata['feat'] = torch.stack(features)
-        graph.ndata['label'] = torch.Tensor(labels).long()
+        features = torch.stack(features)
+        labels = torch.Tensor(labels).long()
+        for i in range(len(graphs)):
+            graphs[i].ndata['feat'] = features
+            graphs[i].ndata['label'] = labels
 
         if save:
             graph_path = os.path.join(self.data_dir, 'cora.dgl')
-            dgl.save_graphs(graph_path, graph)
+            dgl.save_graphs(graph_path, graphs)
             print('> [CoraPreprocessor:construct_graph] DGLGraph saved to %s' % graph_path)
 
-        return graph
+        return graphs
 
-    def construct_pub_dict(self, relationship=None, save_meta=True):
+    def construct_pub_dict(self, save_meta=True):
         """
         Generates publications dictionary according to the specified graph relationship.
-        :param relationship: how edges are formed, according to citing, cited or both directions. For "citing",
-        if x cites y, then y --> x; for "cited", if y cites x, then y --> x; for "both", x <--> y as long as they
-        have citing relationship in any direction.
+        As for relationship, for "citing", if x cites y, then y --> x;
+        for "cited", if y cites x, then y --> x;
+        for "both", x <--> y as long as they have citing relationship in any direction.
         :param save_meta: specifies whether the meta data will be saved to local disk as "pub_dict.json"
         :return: a dictionary including the needed information (nodes, edges, node features, node labels)
         """
-        if (not relationship) or (relationship not in ['citing', 'cited', 'both']):
-            print('> [CoraPreprocessor:construct_pub_dict] Unrecognized graph relationship "%s", use "%s" instead' %
-                  (relationship, GRAPH_RELATIONSHIP_DEFAULT))
-            relationship = GRAPH_RELATIONSHIP_DEFAULT
-
         # 1. Process contents: publication id, word feature vector, label
         label_set = set()
         node_id_counter = 0
@@ -145,7 +159,9 @@ class CoraPreProcessor:
             node['label'] = label_str2val[node['label_str']]
 
         # process cites: citing relationship among publications
-        src_list, dst_list = [], []
+        citing_edges = [set() for _ in range(len(nodes))]
+        cited_edges = [set() for _ in range(len(nodes))]
+        both_edges = [set() for _ in range(len(nodes))]
         cites_path = os.path.join(self.data_dir, CITES_DATA_FN)
         print('> [CoraPreprocessor:construct_pub_dict] Processing %s' % cites_path)
         with open(cites_path) as f:
@@ -160,24 +176,18 @@ class CoraPreProcessor:
                 cited_node_id = pub_id2node_id[cited_pub_id]
                 citing_node_id = pub_id2node_id[citing_pub_id]
 
-                if relationship == 'citing':  # if x cites y, then y --> x
-                    src_list, dst_list = formEdge(src_list, dst_list, src_id=cited_node_id, dst_id=citing_node_id)
-                elif relationship == 'cited':  # if y cites x, then y --> x
-                    src_list, dst_list = formEdge(src_list, dst_list, src_id=citing_node_id, dst_id=cited_node_id)
-                    src_list.append(citing_node_id)
-                    dst_list.append(cited_node_id)
-                elif relationship == 'both':  # x <--> y as long as they have citing relationship in any direction
-                    src_list, dst_list = formEdge(src_list, dst_list, src_id=cited_node_id, dst_id=citing_node_id)
-                    src_list, dst_list = formEdge(src_list, dst_list, src_id=citing_node_id, dst_id=cited_node_id)
-                else:
-                    sys.stderr.write('Unrecognized relationship appeared!\n')
-                    exit(-1)
+                # Citing Relationship
+                citing_edges[cited_node_id].add(citing_node_id)
+                # Cited Relationship
+                cited_edges[citing_node_id].add(cited_node_id)
+                # Both Relationship
+                both_edges[cited_node_id].add(citing_node_id)
+                both_edges[citing_node_id].add(cited_node_id)
 
         print('> [CoraPreprocessor:construct_pub_dict] Collecting components to construct the publication dictionary...')
         pub_dict = {
             'nodes': nodes,
-            'src_list': src_list,
-            'dst_list': dst_list,
+            'edges': [citing_edges, cited_edges, both_edges],
             'extra': {
                 'label_map': label_str2val,
                 'id_map_pub2node': pub_id2node_id
@@ -185,12 +195,16 @@ class CoraPreProcessor:
         }
         meta = {
             'num_nodes': len(pub_dict['nodes']),
-            'num_edges': len(pub_dict['src_list']),
+            'num_edges': [get_num_edges(edges) for edges in pub_dict['edges']],
             'num_feats': pub_dict['nodes'][-1]['feat'].shape[-1],
             'num_classes': len(pub_dict['extra']['label_map']),
             'label_map': pub_dict['extra']['label_map'],
+            'relationship_map': {
+                'citing': 0,
+                'cited': 1,
+                'both': 2
+            },
             'id_map_pub2node': pub_id2node_id,
-            'relationship': relationship
         }
         if save_meta:
             meta_path = os.path.join(self.data_dir, 'meta.json')
@@ -213,5 +227,5 @@ if __name__ == '__main__':
     FLAGS, unparsed = parser.parse_known_args()
 
     cora_preproc = CoraPreProcessor(data_dir=FLAGS.data_dir)
-    my_pub_dict, meta = cora_preproc.construct_pub_dict(relationship=GRAPH_RELATIONSHIP_DEFAULT, save_meta=True)
-    my_graph = cora_preproc.construct_graph(my_pub_dict, save=True)
+    my_pub_dict, my_meta = cora_preproc.construct_pub_dict(save_meta=True)
+    my_graphs = cora_preproc.construct_graph(my_pub_dict, save=True)

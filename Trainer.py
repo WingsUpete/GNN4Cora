@@ -43,13 +43,15 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     # Load DataSet
     logr.log('> Loading DataSet from {}\n'.format(data_dir))
     dataset = CDataSet(data_dir)
-    cgraph = dataset[0]
+    cgraphs = dataset[0]
     if device:
-        cgraph = cgraph.to(device)
+        for i in range(len(cgraphs)):
+            cgraphs[i] = cgraphs[i].to(device)
         if dataset.need_loss_weights:
             dataset.loss_weights = dataset.loss_weights.to(device)
         logr.log('> Data sent to {}\n'.format(device))
-    logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
+    logr.log('> view: %s\n' % dataset.view)
+    logr.log('> num_nodes: %d, num_edges: %s\n' % (dataset.meta['num_nodes'], str(dataset.meta['num_edges'])))
     logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
     logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
     logr.log('> train_set_imbalance: %s\n' % dataset.train_imbalance_record)
@@ -60,21 +62,21 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     logr.log('> Initializing the Training Model: {}\n'.format(model))
     if model == 'GCN':
         net = GCN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
-                  blk_size=Config.BLK_SIZE_DEFAULT)
+                  num_view=Config.NUM_VIEW_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT)
     elif model == 'GAT':
         net = GAT(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
-                  blk_size=Config.BLK_SIZE_DEFAULT,
+                  num_view=Config.NUM_VIEW_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
                   num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
     elif model == 'GaAN':
         net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
-                   blk_size=Config.BLK_SIZE_DEFAULT,
+                   num_view=Config.NUM_VIEW_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
     elif model == 'MLP':
         net = CMLP(in_dim=feat_dim, hidden_dim_ref=hidden_dim, out_dim=out_dim)
     else:
         # Default: GaAN
         net = GaAN(in_dim=feat_dim, hidden_dim=hidden_dim, out_dim=out_dim,
-                   blk_size=Config.BLK_SIZE_DEFAULT,
+                   num_view=Config.NUM_VIEW_DEFAULT, blk_size=Config.BLK_SIZE_DEFAULT,
                    num_heads=Config.NUM_HEADS_DEFAULT, merge=Config.MERGE_HEAD_MODE_DEFAULT)
     logr.log('> Model Structure:\n{}\n'.format(net))
     if device:
@@ -113,11 +115,11 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
     logr.log('------------------------------------------------------------------------\n')
 
     max_eval_acc = 0.0
-    features = cgraph.ndata['feat']
-    labels = cgraph.ndata['label']
-    train_mask = cgraph.ndata['train_mask']
-    valid_mask = cgraph.ndata['valid_mask']
-    test_mask = cgraph.ndata['test_mask']
+    features = cgraphs[-1].ndata['feat']
+    labels = cgraphs[-1].ndata['label']
+    train_mask = cgraphs[-1].ndata['train_mask']
+    valid_mask = cgraphs[-1].ndata['valid_mask']
+    test_mask = cgraphs[-1].ndata['test_mask']
     for epoch_i in range(ep):
         # Train one round
         net.train()
@@ -133,12 +135,12 @@ def train(lr=Config.LEARNING_RATE_DEFAULT, ep=Config.MAX_EPOCHS_DEFAULT,
         if Config.PROFILE:
             with profiler.profile(profile_memory=True, use_cuda=True) as prof:
                 with profiler.record_function('model_inference'):
-                    logits = net(cgraph, features)
+                    logits = net(cgraphs, features)
                     pred = logits.argmax(dim=1)
             logr.log(prof.key_averages().table(sort_by="cuda_time_total"))
             exit(100)
 
-        logits = net(cgraph, features)
+        logits = net(cgraphs, features)
         pred = logits.argmax(dim=1)
 
         loss = criterion(logits[train_mask], labels[train_mask])
@@ -195,11 +197,13 @@ def evaluate(model_name,
     # Load DataSet
     logr.log('> Loading DataSet from {}\n'.format(data_dir))
     dataset = CDataSet(data_dir)
-    cgraph = dataset[0]
+    cgraphs = dataset[0]
     if device:
-        cgraph = cgraph.to(device)
+        for i in range(len(cgraphs)):
+            cgraphs[i] = cgraphs[i].to(device)
         logr.log('> Data sent to {}\n'.format(device))
-    logr.log('> num_nodes: %d, num_edges: %d\n' % (dataset.meta['num_nodes'], dataset.meta['num_edges']))
+    logr.log('> view: %s\n' % dataset.view)
+    logr.log('> num_nodes: %d, num_edges: %s\n' % (dataset.meta['num_nodes'], str(dataset.meta['num_edges'])))
     logr.log('> num_feats: %d, num_classes: %d\n' % (dataset.meta['num_feats'], dataset.meta['num_classes']))
     logr.log('> num_samples: training = %d, validation = %d, test = %d\n' % (dataset.num_train, dataset.num_valid, dataset.num_test))
     logr.log('> train_set_imbalance: %s\n' % dataset.train_imbalance_record)
@@ -213,12 +217,12 @@ def evaluate(model_name,
         logr.log('> Model sent to {}\n'.format(device))
 
     # Evaluate now
-    features = cgraph.ndata['feat']
-    labels = cgraph.ndata['label']
-    valid_mask = cgraph.ndata['valid_mask']
-    test_mask = cgraph.ndata['test_mask']
+    features = cgraphs[-1].ndata['feat']
+    labels = cgraphs[-1].ndata['label']
+    valid_mask = cgraphs[-1].ndata['valid_mask']
+    test_mask = cgraphs[-1].ndata['test_mask']
     net.eval()
-    logits = net(cgraph, features)
+    logits = net(cgraphs, features)
     pred = logits.argmax(dim=1)
     valid_acc = (pred[valid_mask] == labels[valid_mask]).float().mean()
     test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
