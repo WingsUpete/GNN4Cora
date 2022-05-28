@@ -23,10 +23,19 @@ class CDataSet(DGLDataset):
                  train_valid_test_ratio=Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT,
                  view=Config.VIEW_DEFAULT):
         super().__init__(name='cora')
-        if (train_valid_test_ratio[0] < 0 or train_valid_test_ratio[1] < 0 or train_valid_test_ratio[2] < 0) or \
-                (sum(train_valid_test_ratio) != 1.0):
-            sys.stderr.write('> [CDataSet:init] Train-Validation-Test ratios (%.1f, %.1f, %.1f) are not valid. Use (%.1f, %.1f, %.1f) by default.\n' %
-                             (train_valid_test_ratio[0], train_valid_test_ratio[1], train_valid_test_ratio[2], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[0], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[1], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[2]))
+        self.split_mode = Config.DATA_SPLIT_MODE_DEFAULT
+        if self.split_mode not in Config.DATA_SPLIT_MODES:
+            sys.stderr.write('> [CDataSet:init] Unrecognized Train-Validation-Test split mode "%s".\n' % Config.DATA_SPLIT_MODE_DEFAULT)
+            exit(-400)
+        if self.split_mode == 'imbalance':  # casually group first split section
+            if (train_valid_test_ratio[0] < 0 or train_valid_test_ratio[1] < 0 or train_valid_test_ratio[2] < 0) or \
+                    (sum(train_valid_test_ratio) != 1.0):
+                sys.stderr.write('> [CDataSet:init] Train-Validation-Test ratios (%.1f, %.1f, %.1f) are not valid. Use (%.1f, %.1f, %.1f) by default.\n' %
+                                 (train_valid_test_ratio[0], train_valid_test_ratio[1], train_valid_test_ratio[2], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[0], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[1], Config.TRAIN_VALID_TEST_SPLIT_RATIO_DEFAULT[2]))
+        elif self.split_mode == 'balance':  # force selecting 20 for each class, which is a classic approach
+            pass
+        else:
+            exit(-401)
 
         self.data_dir = data_dir
         self.meta = json.load(open(os.path.join(self.data_dir, 'meta.json')))
@@ -34,10 +43,15 @@ class CDataSet(DGLDataset):
         self.view = view
         self.graphs = self.select_graphs(graphs)
 
-        self.train_valid_test_split_ratio = train_valid_test_ratio
-        self.num_train = int(self.meta['num_nodes'] * train_valid_test_ratio[0])
-        self.num_valid = int(self.meta['num_nodes'] * train_valid_test_ratio[1])
-        self.num_test = self.meta['num_nodes'] - self.num_train - self.num_valid
+        if self.split_mode == 'imbalance':
+            self.train_valid_test_split_ratio = train_valid_test_ratio
+            self.num_train = int(self.meta['num_nodes'] * train_valid_test_ratio[0])
+            self.num_valid = int(self.meta['num_nodes'] * train_valid_test_ratio[1])
+            self.num_test = self.meta['num_nodes'] - self.num_train - self.num_valid
+        elif self.split_mode == 'balance':
+            self.num_train, self.num_valid, self.num_test = Config.TRAIN_VALID_TEST_SPLIT_NUM_DEFAULT
+        else:
+            exit(-402)
 
         self.train_imbalance_record = self.train_valid_test_split()
         # Calculate weights for loss rescaling
@@ -66,15 +80,39 @@ class CDataSet(DGLDataset):
         temp_list = [i for i in range(self.meta['num_nodes'])]
         random.shuffle(temp_list)
 
-        for i in range(self.num_train):
-            train_mask[temp_list[i]] = True
-            # Summarize imbalance of the training set
-            cur_label = self.graphs[-1].ndata['label'][temp_list[i]].item()
-            train_imbalance_record[cur_label] += 1
-        for i in range(self.num_valid):
-            valid_mask[temp_list[self.num_train + i]] = True
-        for i in range(self.num_test):
-            test_mask[temp_list[self.num_train + self.num_valid + i]] = True
+        if self.split_mode == 'imbalance':
+            for i in range(self.num_train):
+                train_mask[temp_list[i]] = True
+                # Summarize imbalance of the training set
+                cur_label = self.graphs[-1].ndata['label'][temp_list[i]].item()
+                train_imbalance_record[cur_label] += 1
+            for i in range(self.num_valid):
+                valid_mask[temp_list[self.num_train + i]] = True
+            for i in range(self.num_test):
+                test_mask[temp_list[self.num_train + self.num_valid + i]] = True
+        elif self.split_mode == 'balance':
+            num_for_each_class = int(self.num_train / self.meta['num_classes'])
+            train_cnt, valid_cnt, test_cnt = 0, 0, 0
+            for node_id in temp_list:
+                if train_cnt == self.num_train and valid_cnt == self.num_valid and test_cnt == self.num_test:
+                    break
+                is_train = False
+                if train_cnt < self.num_train:
+                    cur_label = self.graphs[-1].ndata['label'][node_id].item()
+                    if train_imbalance_record[cur_label] < num_for_each_class:  # selectable
+                        train_mask[node_id] = True
+                        train_imbalance_record[cur_label] += 1
+                        train_cnt += 1
+                        is_train = True
+                if not is_train:
+                    if valid_cnt < self.num_valid:
+                        valid_mask[node_id] = True
+                        valid_cnt += 1
+                    elif test_cnt < self.num_test:
+                        test_mask[node_id] = True
+                        test_cnt += 1
+        else:
+            exit(-403)
 
         for i in range(len(self.graphs)):
             self.graphs[i].ndata['train_mask'] = torch.Tensor(train_mask).bool()
