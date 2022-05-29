@@ -1,0 +1,191 @@
+> Seed: 6666666
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: double
+> num_nodes: 2708, num_edges: [5429, 5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Initializing the Training Model: GCN
+> Model Structure:
+GCN(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+    )
+    (1): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=384, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Constructing the Optimizer: ADAM
+> Using CrossEntropyLoss as the Loss Function.
+
+learning_rate = 0.01, epochs = 75
+eval_freq = 5, optimizer = ADAM
+
+Start Training!
+------------------------------------------------------------------------
+Training Round 1: loss = 2.318789, time_cost = 1.5229 sec, acc = 7.7778%
+Training Round 2: loss = 1.295872, time_cost = 0.0701 sec, acc = 54.4444%
+Training Round 3: loss = 0.826161, time_cost = 0.0796 sec, acc = 72.2222%
+Training Round 4: loss = 0.320731, time_cost = 0.0800 sec, acc = 96.2963%
+Training Round 5: loss = 0.161474, time_cost = 0.0802 sec, acc = 98.5185%
+!!! Evaluation: valid_acc = 73.2759%, test_acc = 73.3087%
+Training Round 6: loss = 0.089246, time_cost = 0.0997 sec, acc = 99.2593%
+Training Round 7: loss = 0.049582, time_cost = 0.0800 sec, acc = 99.2593%
+Training Round 8: loss = 0.030972, time_cost = 0.0852 sec, acc = 99.6296%
+Training Round 9: loss = 0.020244, time_cost = 0.0752 sec, acc = 99.6296%
+Training Round 10: loss = 0.013781, time_cost = 0.0697 sec, acc = 99.6296%
+!!! Evaluation: valid_acc = 77.3399%, test_acc = 80.0738%
+Training Round 11: loss = 0.010117, time_cost = 0.1021 sec, acc = 100.0000%
+Training Round 12: loss = 0.008029, time_cost = 0.0679 sec, acc = 100.0000%
+Training Round 13: loss = 0.006999, time_cost = 0.0814 sec, acc = 100.0000%
+Training Round 14: loss = 0.006691, time_cost = 0.0779 sec, acc = 100.0000%
+Training Round 15: loss = 0.006819, time_cost = 0.0717 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.5714%, test_acc = 80.1968%
+Model: model_save/20220530_03_45_16.pth has been saved since it achieves higher validation accuracy.
+Training Round 16: loss = 0.007195, time_cost = 0.0715 sec, acc = 100.0000%
+Training Round 17: loss = 0.007876, time_cost = 0.0805 sec, acc = 100.0000%
+Training Round 18: loss = 0.009063, time_cost = 0.0796 sec, acc = 100.0000%
+Training Round 19: loss = 0.011007, time_cost = 0.0853 sec, acc = 100.0000%
+Training Round 20: loss = 0.013823, time_cost = 0.0769 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 79.8030%, test_acc = 81.6113%
+Model: model_save/20220530_03_45_16.pth has been saved since it achieves higher validation accuracy.
+Training Round 21: loss = 0.017388, time_cost = 0.0781 sec, acc = 100.0000%
+Training Round 22: loss = 0.021449, time_cost = 0.0798 sec, acc = 100.0000%
+Training Round 23: loss = 0.025896, time_cost = 0.0803 sec, acc = 100.0000%
+Training Round 24: loss = 0.030267, time_cost = 0.0797 sec, acc = 100.0000%
+Training Round 25: loss = 0.033807, time_cost = 0.0800 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.1724%, test_acc = 81.9188%
+Model: model_save/20220530_03_45_16.pth has been saved since it achieves higher validation accuracy.
+Training Round 26: loss = 0.036476, time_cost = 0.0741 sec, acc = 100.0000%
+Training Round 27: loss = 0.037896, time_cost = 0.0703 sec, acc = 100.0000%
+Training Round 28: loss = 0.037574, time_cost = 0.1093 sec, acc = 100.0000%
+Training Round 29: loss = 0.036042, time_cost = 0.0804 sec, acc = 100.0000%
+Training Round 30: loss = 0.033994, time_cost = 0.0699 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 81.4039%, test_acc = 82.3493%
+Model: model_save/20220530_03_45_16.pth has been saved since it achieves higher validation accuracy.
+Training Round 31: loss = 0.031502, time_cost = 0.0699 sec, acc = 100.0000%
+Training Round 32: loss = 0.029055, time_cost = 0.0799 sec, acc = 100.0000%
+Training Round 33: loss = 0.026830, time_cost = 0.0798 sec, acc = 100.0000%
+Training Round 34: loss = 0.024738, time_cost = 0.0798 sec, acc = 100.0000%
+Training Round 35: loss = 0.023152, time_cost = 0.0802 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 81.2808%, test_acc = 82.7183%
+Training Round 36: loss = 0.022135, time_cost = 0.0800 sec, acc = 100.0000%
+Training Round 37: loss = 0.021451, time_cost = 0.0800 sec, acc = 100.0000%
+Training Round 38: loss = 0.021061, time_cost = 0.0805 sec, acc = 100.0000%
+Training Round 39: loss = 0.020981, time_cost = 0.0848 sec, acc = 100.0000%
+Training Round 40: loss = 0.021228, time_cost = 0.0747 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.6650%, test_acc = 82.9643%
+Training Round 41: loss = 0.021747, time_cost = 0.0799 sec, acc = 100.0000%
+Training Round 42: loss = 0.022252, time_cost = 0.0801 sec, acc = 100.0000%
+Training Round 43: loss = 0.022683, time_cost = 0.0803 sec, acc = 100.0000%
+Training Round 44: loss = 0.023168, time_cost = 0.0955 sec, acc = 100.0000%
+Training Round 45: loss = 0.023494, time_cost = 0.0959 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.9113%, test_acc = 82.7798%
+Training Round 46: loss = 0.023548, time_cost = 0.0795 sec, acc = 100.0000%
+Training Round 47: loss = 0.023443, time_cost = 0.0736 sec, acc = 100.0000%
+Training Round 48: loss = 0.023180, time_cost = 0.0751 sec, acc = 100.0000%
+Training Round 49: loss = 0.022777, time_cost = 0.0751 sec, acc = 100.0000%
+Training Round 50: loss = 0.022261, time_cost = 0.0839 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.9113%, test_acc = 82.7183%
+Training Round 51: loss = 0.021678, time_cost = 0.0767 sec, acc = 100.0000%
+Training Round 52: loss = 0.021162, time_cost = 0.0694 sec, acc = 100.0000%
+Training Round 53: loss = 0.020720, time_cost = 0.0901 sec, acc = 100.0000%
+Training Round 54: loss = 0.020338, time_cost = 0.0742 sec, acc = 100.0000%
+Training Round 55: loss = 0.020067, time_cost = 0.0780 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.6650%, test_acc = 82.4723%
+Training Round 56: loss = 0.019909, time_cost = 0.0780 sec, acc = 100.0000%
+Training Round 57: loss = 0.019837, time_cost = 0.0800 sec, acc = 100.0000%
+Training Round 58: loss = 0.019837, time_cost = 0.0801 sec, acc = 100.0000%
+Training Round 59: loss = 0.019871, time_cost = 0.0806 sec, acc = 100.0000%
+Training Round 60: loss = 0.019925, time_cost = 0.0792 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 81.0345%, test_acc = 82.7183%
+Training Round 61: loss = 0.019962, time_cost = 0.0772 sec, acc = 100.0000%
+Training Round 62: loss = 0.019938, time_cost = 0.0818 sec, acc = 100.0000%
+Training Round 63: loss = 0.019869, time_cost = 0.0785 sec, acc = 100.0000%
+Training Round 64: loss = 0.019752, time_cost = 0.0795 sec, acc = 100.0000%
+Training Round 65: loss = 0.019597, time_cost = 0.0792 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.5419%, test_acc = 83.0258%
+Training Round 66: loss = 0.019413, time_cost = 0.0697 sec, acc = 100.0000%
+Training Round 67: loss = 0.019218, time_cost = 0.0801 sec, acc = 100.0000%
+Training Round 68: loss = 0.019032, time_cost = 0.0857 sec, acc = 100.0000%
+Training Round 69: loss = 0.018850, time_cost = 0.0767 sec, acc = 100.0000%
+Training Round 70: loss = 0.018677, time_cost = 0.0800 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.4187%, test_acc = 83.2103%
+Training Round 71: loss = 0.018546, time_cost = 0.0705 sec, acc = 100.0000%
+Training Round 72: loss = 0.018440, time_cost = 0.0797 sec, acc = 100.0000%
+Training Round 73: loss = 0.018355, time_cost = 0.0803 sec, acc = 100.0000%
+Training Round 74: loss = 0.018283, time_cost = 0.0798 sec, acc = 100.0000%
+Training Round 75: loss = 0.018223, time_cost = 0.0800 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.2956%, test_acc = 83.4563%
+> Training finished.
+
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: double
+> num_nodes: 2708, num_edges: [5429, 5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Loading model_save/20220530_03_45_16.pth
+> Model Structure:
+GCN(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+    )
+    (1): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer()
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=384, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Evaluation Results: valid_acc = 81.0345%, test_acc = 82.3493%
+> Evaluation finished.

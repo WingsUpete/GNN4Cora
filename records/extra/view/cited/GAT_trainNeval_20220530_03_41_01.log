@@ -1,0 +1,222 @@
+> Seed: 6666666
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: cited
+> num_nodes: 2708, num_edges: [5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Initializing the Training Model: GAT
+> Model Structure:
+GAT(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=512, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Constructing the Optimizer: ADAM
+> Using CrossEntropyLoss as the Loss Function.
+
+learning_rate = 0.01, epochs = 75
+eval_freq = 5, optimizer = ADAM
+
+Start Training!
+------------------------------------------------------------------------
+Training Round 1: loss = 2.469962, time_cost = 1.5609 sec, acc = 10.3704%
+Training Round 2: loss = 1.493591, time_cost = 0.2293 sec, acc = 46.6667%
+Training Round 3: loss = 1.480094, time_cost = 0.2396 sec, acc = 45.9259%
+Training Round 4: loss = 0.597598, time_cost = 0.2400 sec, acc = 90.7407%
+Training Round 5: loss = 0.415333, time_cost = 0.2252 sec, acc = 92.9630%
+!!! Evaluation: valid_acc = 62.8079%, test_acc = 63.7146%
+Training Round 6: loss = 0.294138, time_cost = 0.2151 sec, acc = 95.9259%
+Training Round 7: loss = 0.174437, time_cost = 0.2199 sec, acc = 98.1481%
+Training Round 8: loss = 0.109042, time_cost = 0.2200 sec, acc = 99.6296%
+Training Round 9: loss = 0.077767, time_cost = 0.2301 sec, acc = 99.6296%
+Training Round 10: loss = 0.056850, time_cost = 0.2898 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 69.9507%, test_acc = 70.8487%
+Training Round 11: loss = 0.040496, time_cost = 0.2394 sec, acc = 100.0000%
+Training Round 12: loss = 0.029247, time_cost = 0.2197 sec, acc = 100.0000%
+Training Round 13: loss = 0.022001, time_cost = 0.2212 sec, acc = 100.0000%
+Training Round 14: loss = 0.018021, time_cost = 0.2547 sec, acc = 100.0000%
+Training Round 15: loss = 0.014453, time_cost = 0.2680 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 71.1823%, test_acc = 73.5547%
+Model: model_save/20220530_03_41_01.pth has been saved since it achieves higher validation accuracy.
+Training Round 16: loss = 0.013127, time_cost = 0.2212 sec, acc = 100.0000%
+Training Round 17: loss = 0.011969, time_cost = 0.2394 sec, acc = 100.0000%
+Training Round 18: loss = 0.011750, time_cost = 0.2259 sec, acc = 100.0000%
+Training Round 19: loss = 0.012308, time_cost = 0.2425 sec, acc = 100.0000%
+Training Round 20: loss = 0.013240, time_cost = 0.2866 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 71.4286%, test_acc = 74.6002%
+Model: model_save/20220530_03_41_01.pth has been saved since it achieves higher validation accuracy.
+Training Round 21: loss = 0.015637, time_cost = 0.2424 sec, acc = 100.0000%
+Training Round 22: loss = 0.018497, time_cost = 0.2375 sec, acc = 100.0000%
+Training Round 23: loss = 0.021822, time_cost = 0.2673 sec, acc = 100.0000%
+Training Round 24: loss = 0.025132, time_cost = 0.2760 sec, acc = 100.0000%
+Training Round 25: loss = 0.028595, time_cost = 0.2440 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 72.1675%, test_acc = 73.6162%
+Model: model_save/20220530_03_41_01.pth has been saved since it achieves higher validation accuracy.
+Training Round 26: loss = 0.033473, time_cost = 0.3055 sec, acc = 100.0000%
+Training Round 27: loss = 0.035874, time_cost = 0.2881 sec, acc = 100.0000%
+Training Round 28: loss = 0.037970, time_cost = 0.2467 sec, acc = 100.0000%
+Training Round 29: loss = 0.039511, time_cost = 0.2636 sec, acc = 100.0000%
+Training Round 30: loss = 0.039818, time_cost = 0.2650 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.9360%, test_acc = 72.7552%
+Training Round 31: loss = 0.039047, time_cost = 0.2924 sec, acc = 100.0000%
+Training Round 32: loss = 0.037673, time_cost = 0.2621 sec, acc = 100.0000%
+Training Round 33: loss = 0.035782, time_cost = 0.2679 sec, acc = 100.0000%
+Training Round 34: loss = 0.035570, time_cost = 0.2496 sec, acc = 100.0000%
+Training Round 35: loss = 0.032061, time_cost = 0.2453 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.9360%, test_acc = 73.1857%
+Training Round 36: loss = 0.031475, time_cost = 0.2489 sec, acc = 100.0000%
+Training Round 37: loss = 0.028817, time_cost = 0.2643 sec, acc = 100.0000%
+Training Round 38: loss = 0.028055, time_cost = 0.2897 sec, acc = 100.0000%
+Training Round 39: loss = 0.027523, time_cost = 0.2547 sec, acc = 100.0000%
+Training Round 40: loss = 0.027418, time_cost = 0.2456 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.9360%, test_acc = 73.0012%
+Training Round 41: loss = 0.026006, time_cost = 0.2595 sec, acc = 100.0000%
+Training Round 42: loss = 0.026636, time_cost = 0.2636 sec, acc = 100.0000%
+Training Round 43: loss = 0.027484, time_cost = 0.2726 sec, acc = 100.0000%
+Training Round 44: loss = 0.027712, time_cost = 0.2454 sec, acc = 100.0000%
+Training Round 45: loss = 0.027885, time_cost = 0.2458 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.5665%, test_acc = 72.9397%
+Training Round 46: loss = 0.028243, time_cost = 0.2561 sec, acc = 100.0000%
+Training Round 47: loss = 0.028713, time_cost = 0.2602 sec, acc = 100.0000%
+Training Round 48: loss = 0.028579, time_cost = 0.2802 sec, acc = 100.0000%
+Training Round 49: loss = 0.028864, time_cost = 0.2648 sec, acc = 100.0000%
+Training Round 50: loss = 0.028597, time_cost = 0.2750 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 69.5813%, test_acc = 72.0787%
+Training Round 51: loss = 0.028631, time_cost = 0.3254 sec, acc = 100.0000%
+Training Round 52: loss = 0.027365, time_cost = 0.2949 sec, acc = 100.0000%
+Training Round 53: loss = 0.026792, time_cost = 0.2704 sec, acc = 100.0000%
+Training Round 54: loss = 0.026142, time_cost = 0.2500 sec, acc = 100.0000%
+Training Round 55: loss = 0.026529, time_cost = 0.2596 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.8128%, test_acc = 72.5092%
+Training Round 56: loss = 0.026055, time_cost = 0.2764 sec, acc = 100.0000%
+Training Round 57: loss = 0.025942, time_cost = 0.2486 sec, acc = 100.0000%
+Training Round 58: loss = 0.025768, time_cost = 0.2500 sec, acc = 100.0000%
+Training Round 59: loss = 0.025814, time_cost = 0.2388 sec, acc = 100.0000%
+Training Round 60: loss = 0.025997, time_cost = 0.2453 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.4434%, test_acc = 72.5092%
+Training Round 61: loss = 0.025650, time_cost = 0.2249 sec, acc = 100.0000%
+Training Round 62: loss = 0.025585, time_cost = 0.2414 sec, acc = 100.0000%
+Training Round 63: loss = 0.025848, time_cost = 0.2284 sec, acc = 100.0000%
+Training Round 64: loss = 0.025634, time_cost = 0.2750 sec, acc = 100.0000%
+Training Round 65: loss = 0.026159, time_cost = 0.2395 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.1970%, test_acc = 72.8782%
+Training Round 66: loss = 0.025156, time_cost = 0.2245 sec, acc = 100.0000%
+Training Round 67: loss = 0.025505, time_cost = 0.2418 sec, acc = 100.0000%
+Training Round 68: loss = 0.025233, time_cost = 0.2223 sec, acc = 100.0000%
+Training Round 69: loss = 0.025206, time_cost = 0.2327 sec, acc = 100.0000%
+Training Round 70: loss = 0.025500, time_cost = 0.2254 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.6897%, test_acc = 73.3087%
+Training Round 71: loss = 0.024335, time_cost = 0.2301 sec, acc = 100.0000%
+Training Round 72: loss = 0.025203, time_cost = 0.2406 sec, acc = 100.0000%
+Training Round 73: loss = 0.024415, time_cost = 0.2439 sec, acc = 100.0000%
+Training Round 74: loss = 0.024038, time_cost = 0.2709 sec, acc = 100.0000%
+Training Round 75: loss = 0.024502, time_cost = 0.2243 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 70.5665%, test_acc = 73.0012%
+> Training finished.
+
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: cited
+> num_nodes: 2708, num_edges: [5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Loading model_save/20220530_03_41_01.pth
+> Model Structure:
+GAT(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+          )
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=512, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Evaluation Results: valid_acc = 71.7980%, test_acc = 73.7392%
+> Evaluation finished.

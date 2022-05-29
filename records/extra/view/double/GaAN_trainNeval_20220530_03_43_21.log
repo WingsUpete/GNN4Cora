@@ -1,0 +1,400 @@
+> Seed: 6666666
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: double
+> num_nodes: 2708, num_edges: [5429, 5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Initializing the Training Model: GaAN
+> Model Structure:
+GaAN(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+    )
+    (1): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=896, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Constructing the Optimizer: ADAM
+> Using CrossEntropyLoss as the Loss Function.
+
+learning_rate = 0.01, epochs = 75
+eval_freq = 5, optimizer = ADAM
+
+Start Training!
+------------------------------------------------------------------------
+Training Round 1: loss = 2.072942, time_cost = 2.0267 sec, acc = 14.8148%
+Training Round 2: loss = 1.634794, time_cost = 0.4877 sec, acc = 38.8889%
+Training Round 3: loss = 0.913331, time_cost = 0.4826 sec, acc = 75.5556%
+Training Round 4: loss = 0.600507, time_cost = 0.4972 sec, acc = 92.9630%
+Training Round 5: loss = 0.291295, time_cost = 0.4979 sec, acc = 99.2593%
+!!! Evaluation: valid_acc = 69.2118%, test_acc = 71.2177%
+Training Round 6: loss = 0.117493, time_cost = 0.4899 sec, acc = 98.1481%
+Training Round 7: loss = 0.039193, time_cost = 0.5602 sec, acc = 99.6296%
+Training Round 8: loss = 0.013091, time_cost = 0.5451 sec, acc = 99.6296%
+Training Round 9: loss = 0.009346, time_cost = 0.5439 sec, acc = 99.6296%
+Training Round 10: loss = 0.005351, time_cost = 0.5097 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 76.2315%, test_acc = 79.0898%
+Training Round 11: loss = 0.003015, time_cost = 0.4903 sec, acc = 100.0000%
+Training Round 12: loss = 0.001327, time_cost = 0.5248 sec, acc = 100.0000%
+Training Round 13: loss = 0.000737, time_cost = 0.4997 sec, acc = 100.0000%
+Training Round 14: loss = 0.000662, time_cost = 0.5102 sec, acc = 100.0000%
+Training Round 15: loss = 0.000902, time_cost = 0.4905 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 77.5862%, test_acc = 80.9348%
+Model: model_save/20220530_03_43_21.pth has been saved since it achieves higher validation accuracy.
+Training Round 16: loss = 0.001289, time_cost = 0.4998 sec, acc = 100.0000%
+Training Round 17: loss = 0.002393, time_cost = 0.5100 sec, acc = 100.0000%
+Training Round 18: loss = 0.003989, time_cost = 0.5764 sec, acc = 100.0000%
+Training Round 19: loss = 0.006765, time_cost = 0.5386 sec, acc = 100.0000%
+Training Round 20: loss = 0.010072, time_cost = 0.5401 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 77.5862%, test_acc = 78.9668%
+Training Round 21: loss = 0.015067, time_cost = 0.5601 sec, acc = 100.0000%
+Training Round 22: loss = 0.017797, time_cost = 0.5605 sec, acc = 100.0000%
+Training Round 23: loss = 0.022198, time_cost = 0.5597 sec, acc = 100.0000%
+Training Round 24: loss = 0.023762, time_cost = 0.5651 sec, acc = 100.0000%
+Training Round 25: loss = 0.025051, time_cost = 0.5700 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 76.2315%, test_acc = 79.3973%
+Training Round 26: loss = 0.023986, time_cost = 0.5963 sec, acc = 100.0000%
+Training Round 27: loss = 0.022723, time_cost = 0.5513 sec, acc = 100.0000%
+Training Round 28: loss = 0.022834, time_cost = 0.5798 sec, acc = 100.0000%
+Training Round 29: loss = 0.020232, time_cost = 0.5973 sec, acc = 100.0000%
+Training Round 30: loss = 0.018520, time_cost = 0.5821 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 77.7094%, test_acc = 80.9348%
+Model: model_save/20220530_03_43_21.pth has been saved since it achieves higher validation accuracy.
+Training Round 31: loss = 0.016447, time_cost = 0.5654 sec, acc = 100.0000%
+Training Round 32: loss = 0.015948, time_cost = 0.5497 sec, acc = 100.0000%
+Training Round 33: loss = 0.015779, time_cost = 0.5502 sec, acc = 100.0000%
+Training Round 34: loss = 0.016145, time_cost = 0.5550 sec, acc = 100.0000%
+Training Round 35: loss = 0.015846, time_cost = 0.5702 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 76.9704%, test_acc = 80.5043%
+Training Round 36: loss = 0.015736, time_cost = 0.5450 sec, acc = 100.0000%
+Training Round 37: loss = 0.016436, time_cost = 0.5631 sec, acc = 100.0000%
+Training Round 38: loss = 0.016701, time_cost = 0.6007 sec, acc = 100.0000%
+Training Round 39: loss = 0.017547, time_cost = 0.5550 sec, acc = 100.0000%
+Training Round 40: loss = 0.017682, time_cost = 0.5753 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 77.4631%, test_acc = 81.3653%
+Training Round 41: loss = 0.018055, time_cost = 0.5373 sec, acc = 100.0000%
+Training Round 42: loss = 0.017940, time_cost = 0.5116 sec, acc = 100.0000%
+Training Round 43: loss = 0.018051, time_cost = 0.5595 sec, acc = 100.0000%
+Training Round 44: loss = 0.017441, time_cost = 0.5553 sec, acc = 100.0000%
+Training Round 45: loss = 0.016111, time_cost = 0.5399 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.4483%, test_acc = 81.6728%
+Model: model_save/20220530_03_43_21.pth has been saved since it achieves higher validation accuracy.
+Training Round 46: loss = 0.015485, time_cost = 0.5700 sec, acc = 100.0000%
+Training Round 47: loss = 0.015848, time_cost = 0.5401 sec, acc = 100.0000%
+Training Round 48: loss = 0.015141, time_cost = 0.5466 sec, acc = 100.0000%
+Training Round 49: loss = 0.014987, time_cost = 0.5384 sec, acc = 100.0000%
+Training Round 50: loss = 0.015842, time_cost = 0.5789 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.3251%, test_acc = 82.6568%
+Training Round 51: loss = 0.015856, time_cost = 0.5328 sec, acc = 100.0000%
+Training Round 52: loss = 0.016007, time_cost = 0.5402 sec, acc = 100.0000%
+Training Round 53: loss = 0.016178, time_cost = 0.5949 sec, acc = 100.0000%
+Training Round 54: loss = 0.015910, time_cost = 0.5568 sec, acc = 100.0000%
+Training Round 55: loss = 0.016474, time_cost = 0.5618 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.8177%, test_acc = 82.7798%
+Model: model_save/20220530_03_43_21.pth has been saved since it achieves higher validation accuracy.
+Training Round 56: loss = 0.015962, time_cost = 0.5423 sec, acc = 100.0000%
+Training Round 57: loss = 0.015606, time_cost = 0.5608 sec, acc = 100.0000%
+Training Round 58: loss = 0.014617, time_cost = 0.5451 sec, acc = 100.0000%
+Training Round 59: loss = 0.014571, time_cost = 0.5303 sec, acc = 100.0000%
+Training Round 60: loss = 0.015230, time_cost = 0.5480 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.4483%, test_acc = 82.4723%
+Training Round 61: loss = 0.014642, time_cost = 0.5447 sec, acc = 100.0000%
+Training Round 62: loss = 0.015191, time_cost = 0.5272 sec, acc = 100.0000%
+Training Round 63: loss = 0.014950, time_cost = 0.5501 sec, acc = 100.0000%
+Training Round 64: loss = 0.014957, time_cost = 0.5676 sec, acc = 100.0000%
+Training Round 65: loss = 0.015155, time_cost = 0.5280 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 79.0640%, test_acc = 82.5953%
+Model: model_save/20220530_03_43_21.pth has been saved since it achieves higher validation accuracy.
+Training Round 66: loss = 0.014650, time_cost = 0.5601 sec, acc = 100.0000%
+Training Round 67: loss = 0.014856, time_cost = 0.5511 sec, acc = 100.0000%
+Training Round 68: loss = 0.014298, time_cost = 0.5489 sec, acc = 100.0000%
+Training Round 69: loss = 0.014355, time_cost = 0.5638 sec, acc = 100.0000%
+Training Round 70: loss = 0.014654, time_cost = 0.5274 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.9409%, test_acc = 82.6568%
+Training Round 71: loss = 0.014772, time_cost = 0.5570 sec, acc = 100.0000%
+Training Round 72: loss = 0.015110, time_cost = 0.5610 sec, acc = 100.0000%
+Training Round 73: loss = 0.014213, time_cost = 0.5524 sec, acc = 100.0000%
+Training Round 74: loss = 0.013741, time_cost = 0.5363 sec, acc = 100.0000%
+Training Round 75: loss = 0.014072, time_cost = 0.5559 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 78.5714%, test_acc = 83.0873%
+> Training finished.
+
+> device: cuda:0
+> Loading DataSet from data/cora/
+> Data sent to cuda:0
+> view: double
+> num_nodes: 2708, num_edges: [5429, 5429]
+> num_feats: 1433, num_classes: 7
+> num_samples: training = 270, validation = 812, test = 1626
+> train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
+> Loading model_save/20220530_03_43_21.pth
+> Model Structure:
+GaAN(
+  (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
+  (embed_fc): Linear(in_features=128, out_features=128, bias=False)
+  (layers): ModuleList(
+    (0): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+    )
+    (1): ModuleList(
+      (0): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+      (1): MultiHeadCGaANLayer(
+        (cGaANs): ModuleList(
+          (0): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (1): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+          (2): CGaANLayer(
+            (Wa): Linear(in_features=128, out_features=128, bias=False)
+            (att_out_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (att_out_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_l): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_m): Linear(in_features=128, out_features=1, bias=False)
+            (gate_fc_r): Linear(in_features=128, out_features=1, bias=False)
+            (Wgm): Linear(in_features=128, out_features=128, bias=False)
+          )
+        )
+      )
+    )
+  )
+  (tran_fc): Linear(in_features=896, out_features=7, bias=True)
+)
+> Model sent to cuda:0
+> Evaluation Results: valid_acc = 78.4483%, test_acc = 82.5953%
+> Evaluation finished.

@@ -141,6 +141,6 @@ model_save/
 log/
 
 # Stored Results
-!records/logs/*.log
-!records/models/*.pth
-!records/figs/*.png
+!records/**/*.log
+!records/**/*.pth
+!records/**/*.png
