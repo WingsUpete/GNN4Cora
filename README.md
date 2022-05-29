@@ -9,6 +9,16 @@ The model implementation uses [PyTorch](https://pytorch.org/) and [Deep Graph Li
 
 <br>
 
+## Dependency
+
+The required python packages are listed below:
+- [Pytorch](https://pytorch.org/get-started/locally/) installed with CUDA support
+- [DGL (Deep Graph Library)](https://www.dgl.ai/pages/start.html) installed with CUDA support
+- `numpy`
+- `matplotlib`
+
+<br>
+
 ## Preprocess
 
 In [`preprocess/CoraPreprocessor.py`](preprocess/CoraPreprocessor.py), the Cora Dataset is downloaded and preprocessed. This operation should be called before any training process. To see how it works, write:
@@ -35,7 +45,7 @@ As an example, we can run as:
 python CoraPreprocessor.py -dr ../data/cora/
 ```
 
-Note that the `data/` directory should be created beforehand.
+**Note that the `data/` directory should be created beforehand.**
 
 After preprocessing the data, the data directory will look like this:
 
