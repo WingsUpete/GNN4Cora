@@ -156,7 +156,7 @@ As an example, we can run as:
 python Trainer.py -dr data/cora/ -m trainNeval -net GaAN -tag GaAN
 ```
 
-With this command, the model "GaAN" will be trained **and evaluated**. The outputs will be forwarded to `stdout` and a created log file. The outputs look like the following (or check [`records/logs/GaAN_trainNeval_20220527_21_36_39.log`](records/logs/GaAN_trainNeval_20220527_21_36_39.log)):
+With this command, the model "GaAN" will be trained **and evaluated**. The outputs will be forwarded to `stdout` and a created log file. The outputs look like the following (or check [`records/logs/GaAN_trainNeval_20220529_21_14_50.log`](records/logs/GaAN_trainNeval_20220529_21_14_50.log)):
 
 ```pseudocode
 > Seed: 6666666
@@ -250,30 +250,38 @@ eval_freq = 5, optimizer = ADAM
 
 Start Training!
 ------------------------------------------------------------------------
-Training Round 1: loss = 2.223528, time_cost = 4.1979 sec, acc = 17.0370%
-Training Round 2: loss = 1.416553, time_cost = 0.4652 sec, acc = 45.9259%
-Training Round 3: loss = 0.809024, time_cost = 0.5017 sec, acc = 81.1111%
-Training Round 4: loss = 0.350865, time_cost = 0.4840 sec, acc = 97.4074%
-Training Round 5: loss = 0.126183, time_cost = 0.5012 sec, acc = 98.8889%
+Training Round 1: loss = 2.223528, time_cost = 3.8676 sec, acc = 17.0370%
+Training Round 2: loss = 1.416553, time_cost = 0.5151 sec, acc = 45.9259%
+Training Round 3: loss = 0.809024, time_cost = 0.4751 sec, acc = 81.1111%
+Training Round 4: loss = 0.350864, time_cost = 0.4673 sec, acc = 97.4074%
+Training Round 5: loss = 0.126179, time_cost = 0.4973 sec, acc = 98.8889%
 !!! Evaluation: valid_acc = 72.6601%, test_acc = 74.1082%
-Training Round 6: loss = 0.040574, time_cost = 0.5338 sec, acc = 99.6296%
-Training Round 7: loss = 0.013757, time_cost = 0.4602 sec, acc = 99.6296%
-Training Round 8: loss = 0.006113, time_cost = 0.4932 sec, acc = 99.6296%
-Training Round 9: loss = 0.006870, time_cost = 0.4961 sec, acc = 99.6296%
-Training Round 10: loss = 0.002176, time_cost = 0.4764 sec, acc = 100.0000%
+Training Round 6: loss = 0.040575, time_cost = 0.5413 sec, acc = 99.6296%
+Training Round 7: loss = 0.013756, time_cost = 0.4940 sec, acc = 99.6296%
+Training Round 8: loss = 0.006114, time_cost = 0.4738 sec, acc = 99.6296%
+Training Round 9: loss = 0.006870, time_cost = 0.4903 sec, acc = 99.6296%
+Training Round 10: loss = 0.002174, time_cost = 0.5201 sec, acc = 100.0000%
 !!! Evaluation: valid_acc = 77.5862%, test_acc = 79.4588%
-Training Round 11: loss = 0.001610, time_cost = 0.4713 sec, acc = 100.0000%
-Training Round 12: loss = 0.001822, time_cost = 0.4579 sec, acc = 100.0000%
-Training Round 13: loss = 0.001648, time_cost = 0.5568 sec, acc = 100.0000%
-Training Round 14: loss = 0.001144, time_cost = 0.5029 sec, acc = 100.0000%
-Training Round 15: loss = 0.001322, time_cost = 0.4706 sec, acc = 100.0000%
+Training Round 11: loss = 0.001611, time_cost = 0.5225 sec, acc = 100.0000%
+Training Round 12: loss = 0.001822, time_cost = 0.4525 sec, acc = 100.0000%
+Training Round 13: loss = 0.001653, time_cost = 0.4874 sec, acc = 100.0000%
+Training Round 14: loss = 0.001147, time_cost = 0.4703 sec, acc = 100.0000%
+Training Round 15: loss = 0.001320, time_cost = 0.5180 sec, acc = 100.0000%
 !!! Evaluation: valid_acc = 78.6946%, test_acc = 78.4748%
-Model: model_save/20220527_21_36_39.pth has been saved since it achieves higher validation accuracy.
-Training Round 16: loss = 0.001828, time_cost = 0.4758 sec, acc = 100.0000%
-Training Round 17: loss = 0.002809, time_cost = 0.4861 sec, acc = 100.0000%
+Model: model_save/20220529_21_14_50.pth has been saved since it achieves higher validation accuracy.
+Training Round 16: loss = 0.001826, time_cost = 0.4814 sec, acc = 100.0000%
+Training Round 17: loss = 0.002806, time_cost = 0.4652 sec, acc = 100.0000%
+Training Round 18: loss = 0.004046, time_cost = 0.4918 sec, acc = 100.0000%
+Training Round 19: loss = 0.006840, time_cost = 0.5150 sec, acc = 100.0000%
+Training Round 20: loss = 0.011448, time_cost = 0.4801 sec, acc = 100.0000%
+!!! Evaluation: valid_acc = 80.4187%, test_acc = 80.6888%
+Model: model_save/20220529_21_14_50.pth has been saved since it achieves higher validation accuracy.
+Training Round 21: loss = 0.016506, time_cost = 0.5051 sec, acc = 100.0000%
+Training Round 22: loss = 0.021988, time_cost = 0.4740 sec, acc = 100.0000%
+Training Round 23: loss = 0.025798, time_cost = 0.4953 sec, acc = 100.0000%
 ...
-Training Round 74: loss = 0.013630, time_cost = 0.4650 sec, acc = 100.0000%
-Training Round 75: loss = 0.012812, time_cost = 0.4650 sec, acc = 100.0000%
+Training Round 74: loss = 0.013636, time_cost = 0.5376 sec, acc = 100.0000%
+Training Round 75: loss = 0.012804, time_cost = 0.4549 sec, acc = 100.0000%
 !!! Evaluation: valid_acc = 81.6502%, test_acc = 83.0873%
 > Training finished.
 
@@ -285,7 +293,7 @@ Training Round 75: loss = 0.012812, time_cost = 0.4650 sec, acc = 100.0000%
 > num_feats: 1433, num_classes: 7
 > num_samples: training = 270, validation = 812, test = 1626
 > train_set_imbalance: {0: 28, 1: 35, 2: 79, 3: 50, 4: 22, 5: 20, 6: 36}
-> Loading model_save/20220527_21_36_39.pth
+> Loading model_save/20220529_21_14_50.pth
 > Model Structure:
 GaAN(
   (proj_fc): Linear(in_features=1433, out_features=128, bias=False)
@@ -369,7 +377,7 @@ The trained model will be saved as a `.pth` file.
 We can also run as:
 
 ```bash
-python Trainer.py -dr data/cora/ -m eval -e records/models/20220527_21_36_39.pth -tag GaAN
+python Trainer.py -dr data/cora/ -m eval -e records/models/20220529_21_14_50.pth -tag GaAN
 ```
 
 With this command, we can evaluate a trained model stored on local disk.
@@ -402,11 +410,11 @@ optional arguments:
 As an example, we can run as:
 
 ```bash
-python LossCurveRenderer.py -i ../records/logs/GaAN_trainNeval_20220527_21_36_39.log -o ./
+python LossCurveRenderer.py -i ../records/logs/GaAN_trainNeval_20220529_21_14_50.log -o ./
 ```
 
-A `.png` image file will be stored to the path `./`. The loss curve image is like below (or check [records/figs/GaAN_trainNeval_20220527_21_36_39.png](records/figs/GaAN_trainNeval_20220527_21_36_39.png)):
+A `.png` image file will be stored to the path `./`. The loss curve image is like below (or check [records/figs/GaAN_trainNeval_20220529_21_14_50.png](records/figs/GaAN_trainNeval_20220529_21_14_50.png)):
 
-![Loss Curve](records/figs/GaAN_trainNeval_20220527_21_36_39.png)
+![Loss Curve](records/figs/GaAN_trainNeval_20220529_21_14_50.png)
 
 We can see that the loss of the implemented GaAN model quickly decreased and converged in less than 10 epochs.
